@@ -1,3 +1,5 @@
+import confetti from 'canvas-confetti';
+import jackpotSoundFile from './assets/jackpot.mp3';
 import {
     Application,
     Assets,
@@ -11,6 +13,8 @@ import {
     BlurFilter,
     FillGradient,
 } from 'pixi.js';
+
+let jackpotSound;
 
 (async () =>
 {
@@ -144,6 +148,19 @@ import {
     });
 
     let running = false;
+    jackpotSound = new Audio(jackpotSoundFile);
+
+    function flashJackpotText() {
+        let flashCount = 0;
+        const flashInterval = setInterval(() => {
+            playText.visible = !playText.visible;
+            flashCount++;
+            if (flashCount >= 10) {
+                clearInterval(flashInterval);
+                playText.visible = true;
+            }
+        }, 200);
+    }
 
     // Function to start playing.
     function startPlay() {
@@ -159,19 +176,6 @@ import {
             tweenTo(r, 'position', target, time, backout(0.5), null, i === reels.length - 1 ? reelsComplete : null);
         }
     }
-
-    // function updateReelsData() {
-    //     reels.forEach((reel, i) => {
-    //         const visibleSymbols = [];
-    //         const reelPosition = Math.floor(reel.position) % reel.symbols.length;
-    //         for (let j = 0; j < 3; j++) {
-    //             const symbolIndex = (reelPosition + j) % reel.symbols.length;
-    //             visibleSymbols.push(reel.symbols[symbolIndex]);
-    //         }
-    //         reel.visibleSymbols = visibleSymbols;
-    //         console.log(`Reel ${i} visible symbols:`, visibleSymbols.map(s => s.texture.label));
-    //     });
-    // }
 
     function checkJackpot(reels) {
         for (let row = 0; row < 3; row++) {
@@ -207,6 +211,20 @@ import {
             bottom.eventMode = 'none';
             bottom.cursor = 'default';
 
+            // Play jackpot sound
+            jackpotSound.load();
+            jackpotSound.play().catch(error => console.log('Audio play failed:', error));
+
+            // Trigger confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Flash jackpot text
+            flashJackpotText();
+
             // Set a timeout to refresh after showing the jackpot
             setTimeout(() => {
                 refreshGame();
@@ -223,6 +241,10 @@ import {
         reels.forEach(reel => {
             reel.position = 0;
             reel.previousPosition = 0;
+
+            // Stop the jackpot sound
+            jackpotSound.pause();
+            jackpotSound.currentTime = 0;
         });
     
         // Randomize symbols
