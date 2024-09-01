@@ -162,7 +162,7 @@ let jackpotSound;
 
     const playStyle = new TextStyle({
         fontFamily: 'Arial',
-        fontSize: 28,
+        fontSize: 22,
         fontWeight: 'bold',
         fill: { fill },
         align: 'center',
