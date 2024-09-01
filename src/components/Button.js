@@ -6,7 +6,10 @@ export class Button extends Container {
     constructor(text, style, width, height, onClick) {
         super();
 
-        this.buttonText = new Text(text, style);
+        this.buttonText = new Text({
+            text: text,
+            style: style
+        });
         this.buttonText.x = 10;
         this.buttonText.y = 10;
 

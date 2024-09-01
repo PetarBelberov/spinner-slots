@@ -13,8 +13,8 @@ export class Reel {
         this.previousPosition = 0;
         this.blur = new BlurFilter();
 
-        this.blur.blurX = 0;
-        this.blur.blurY = 0;
+        this.blur.strengthX = 0;
+        this.blur.strengthY = 0;
         this.container.filters = [this.blur];
 
         // Build the symbols
@@ -27,7 +27,7 @@ export class Reel {
     }
 
     update(slotTextures, reels) {
-        this.blur.blurY = (this.position - this.previousPosition) * 8;
+        this.blur.strengthY = (this.position - this.previousPosition) * 8;
         this.previousPosition = this.position;
     
         this.visibleSymbols = [];

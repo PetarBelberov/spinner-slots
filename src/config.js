@@ -1,7 +1,7 @@
 // config.js
 
-export const REEL_WIDTH = 160;
-export const SYMBOL_SIZE = 180;
+export const REEL_WIDTH = 140;
+export const SYMBOL_SIZE = 190;
 export const SYMBOL_PADDING = 10;
 export const REEL_COUNT = 5;
 export const SYMBOL_COUNT = 4;

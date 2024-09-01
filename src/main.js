@@ -108,8 +108,11 @@ let jackpotSound;
     reelContainer.y = (app.screen.height - totalReelHeight) / 2;
     reelContainer.x = (app.screen.width - REEL_WIDTH * 5) / 2;
 
-    const top = new Graphics().rect(0, 0, app.screen.width, reelContainer.y).fill({ color: COLORS.TOP_BOTTOM });
-    const bottom = new Graphics().rect(0, reelContainer.y + totalReelHeight, app.screen.width, app.screen.height - (reelContainer.y + totalReelHeight)).fill({ color: COLORS.TOP_BOTTOM });
+    const top = new Container();
+    const topBackground = new Graphics().rect(0, 0, app.screen.width, reelContainer.y).fill({ color: COLORS.TOP_BOTTOM });
+
+    const bottom = new Container();
+    const bottomBackground  = new Graphics().rect(0, reelContainer.y + totalReelHeight, app.screen.width, app.screen.height - (reelContainer.y + totalReelHeight)).fill({ color: COLORS.TOP_BOTTOM });
 
     // Create gradient fill
     const fill = new FillGradient(0, 0, 0, 36 * 1.7);
@@ -130,8 +133,9 @@ let jackpotSound;
     const buttonWidth = 10; // Adjust this value as needed
     const buttonHeight = 10; // Adjust this value as needed
     const playButton = new Button('Избери', playStyle, buttonWidth, buttonHeight, startPlay);
-    playButton.x = Math.round((bottom.width - playButton.width) / 2);
+    playButton.x = Math.round((bottomBackground.width - playButton.width) / 2);
     playButton.y = app.screen.height - margin + Math.round((margin - playButton.height) / 2);
+    bottom.addChild(bottomBackground);
     bottom.addChild(playButton);
 
     // Add header text
@@ -140,8 +144,9 @@ let jackpotSound;
         style: style
     });
 
-    headerText.x = Math.round((top.width - headerText.width) / 2);
+    headerText.x = Math.round((topBackground.width - headerText.width) / 2);
     headerText.y = Math.round((margin - headerText.height) / 2);
+    top.addChild(topBackground);
     top.addChild(headerText);
 
     app.stage.addChild(top);
