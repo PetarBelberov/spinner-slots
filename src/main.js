@@ -1,5 +1,10 @@
 import confetti from 'canvas-confetti';
 import jackpotSoundFile from './assets/jackpot.mp3';
+import borisovImage from './assets/borisov.jpg';
+import doganImage from './assets/dogan.jpg';
+import peevskiImage from './assets/peevski.jpg';
+import petkovImage from './assets/petkov.jpg';
+import vasilevImage from './assets/vasilev.jpg';
 import {
     Application,
     Assets,
@@ -29,21 +34,23 @@ let jackpotSound;
 
     // Load the textures
     await Assets.load([
-        'https://pixijs.com/assets/eggHead.png',
-        'https://pixijs.com/assets/flowerTop.png',
-        'https://pixijs.com/assets/helmlok.png',
-        'https://pixijs.com/assets/skully.png',
+        borisovImage,
+        doganImage,
+        peevskiImage,
+        petkovImage,
+        vasilevImage,
     ]);
 
     const REEL_WIDTH = 160;
-    const SYMBOL_SIZE = 150;
+    const SYMBOL_SIZE = 180;
 
     // Create different slot symbols
     const slotTextures = [
-        Texture.from('https://pixijs.com/assets/eggHead.png'),
-        Texture.from('https://pixijs.com/assets/flowerTop.png'),
-        Texture.from('https://pixijs.com/assets/helmlok.png'),
-        Texture.from('https://pixijs.com/assets/skully.png'),
+        Texture.from(borisovImage),
+        Texture.from(doganImage),
+        Texture.from(peevskiImage),
+        Texture.from(petkovImage),
+        Texture.from(vasilevImage),
     ];
 
     // Build the reels
@@ -76,8 +83,8 @@ let jackpotSound;
             // Scale the symbol to fit symbol area.
 
             symbol.y = j * SYMBOL_SIZE;
-            symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.width, SYMBOL_SIZE / symbol.height);
-            symbol.x = Math.round((SYMBOL_SIZE - symbol.width) / 2);
+            symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.texture.width, SYMBOL_SIZE / symbol.texture.height);
+            symbol.x = Math.round((REEL_WIDTH - symbol.width) / 2);
             reel.symbols.push(symbol);
             rc.addChild(symbol);
         }
@@ -88,10 +95,10 @@ let jackpotSound;
     // Build top & bottom covers and position reelContainer
     const margin = (app.screen.height - SYMBOL_SIZE * 3) / 2;
 
-    reelContainer.y = margin;
-    reelContainer.x = Math.round(app.screen.width - REEL_WIDTH * 5);
-    const top = new Graphics().rect(0, 0, app.screen.width, margin).fill({ color: 0x0 });
-    const bottom = new Graphics().rect(0, SYMBOL_SIZE * 3 + margin, app.screen.width, margin).fill({ color: 0x0 });
+    reelContainer.y = (app.screen.height - SYMBOL_SIZE * 3) / 2;
+    reelContainer.x = (app.screen.width - REEL_WIDTH * 5) / 2;
+    const top = new Graphics().rect(0, 0, app.screen.width, reelContainer.y).fill({ color: 0x0 });
+    const bottom = new Graphics().rect(0, reelContainer.y + SYMBOL_SIZE * 3, app.screen.width, app.screen.height - (reelContainer.y + SYMBOL_SIZE * 3)).fill({ color: 0x0 });
 
     // Create gradient fill
     const fill = new FillGradient(0, 0, 0, 36 * 1.7);
@@ -123,14 +130,20 @@ let jackpotSound;
         wordWrapWidth: 440,
     });
 
-    const playText = new Text('Spin the wheels!', style);
+    const playText = new Text({
+        text: 'Spin the wheels!',
+        style: style
+    });
 
     playText.x = Math.round((bottom.width - playText.width) / 2);
     playText.y = app.screen.height - margin + Math.round((margin - playText.height) / 2);
     bottom.addChild(playText);
 
     // Add header text
-    const headerText = new Text('PIXI MONSTER SLOTS!', style);
+    const headerText = new Text({
+        text: 'Who will be prime minister?',
+        style: style
+    });
 
     headerText.x = Math.round((top.width - headerText.width) / 2);
     headerText.y = Math.round((margin - headerText.height) / 2);
@@ -204,7 +217,7 @@ let jackpotSound;
         });
     
         const isJackpot = checkJackpot(reels);
-        playText.text = isJackpot ? 'JACKPOT!' : 'Spin again!';
+        playText.text = isJackpot ? 'Congratulations!' : 'Try again!';
 
         if (isJackpot) {
             // Disable interactivity
