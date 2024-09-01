@@ -5,6 +5,8 @@ import doganImage from './assets/dogan.jpg';
 import peevskiImage from './assets/peevski.jpg';
 import petkovImage from './assets/petkov.jpg';
 import vasilevImage from './assets/vasilev.jpg';
+import { Reel } from './components/Reel.js';
+import { tweenTo, updateTweens, backout } from './utils/tweenUtils.js';
 import {
     REEL_WIDTH,
     SYMBOL_SIZE,
@@ -29,7 +31,6 @@ import {
     BlurFilter,
     FillGradient,
 } from 'pixi.js';
-import { tweenTo, updateTweens, backout } from './utils/tweenUtils.js';
 
 let jackpotSound;
 
@@ -93,37 +94,10 @@ let jackpotSound;
     const reels = [];
     const reelContainer = new Container();
 
-    for (let i = 0; i < 5; i++)
-    {
-        const rc = new Container();
-
-        rc.x = i * REEL_WIDTH;
-        reelContainer.addChild(rc);
-
-        const reel = {
-            container: rc,
-            symbols: [],
-            position: 0,
-            previousPosition: 0,
-            blur: new BlurFilter(),
-        };
-
-        reel.blur.blurX = 0;
-        reel.blur.blurY = 0;
-        rc.filters = [reel.blur];
-
-        // Build the symbols
-        for (let j = 0; j < 4; j++)
-        {
-            const symbol = new Sprite(slotTextures[Math.floor(Math.random() * slotTextures.length)]);
-            // Scale the symbol to fit symbol area.
-
-            symbol.y = j * (SYMBOL_SIZE + SYMBOL_PADDING);
-            symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.texture.width, SYMBOL_SIZE / symbol.texture.height);
-            symbol.x = Math.round((REEL_WIDTH - symbol.width) / 2);
-            reel.symbols.push(symbol);
-            rc.addChild(symbol);
-        }
+    for (let i = 0; i < REEL_COUNT; i++) {
+        const reel = new Reel(slotTextures);
+        reel.container.x = i * REEL_WIDTH;
+        reelContainer.addChild(reel.container);
         reels.push(reel);
     }
     app.stage.addChild(reelContainer);
