@@ -6,6 +6,8 @@ import peevskiImage from './assets/peevski.jpg';
 import petkovImage from './assets/petkov.jpg';
 import vasilevImage from './assets/vasilev.jpg';
 import { Reel } from './components/Reel.js';
+import { Symbol } from './components/Symbol.js';
+
 import { tweenTo, updateTweens, backout } from './utils/tweenUtils.js';
 import {
     REEL_WIDTH,
@@ -321,33 +323,7 @@ let jackpotSound;
     // Listen for animate update.
     app.ticker.add(() => {
         for (let i = 0; i < REEL_COUNT; i++) {
-            const r = reels[i];
-            r.blur.blurY = (r.position - r.previousPosition) * 8;
-            r.previousPosition = r.position;
-
-            r.visibleSymbols = [];
-
-            for (let j = 0; j < SYMBOL_COUNT; j++) {
-                const s = r.symbols[j];
-                const prevy = s.y;
-                s.y = ((r.position + j) % r.symbols.length) * (SYMBOL_SIZE + SYMBOL_PADDING) - (SYMBOL_SIZE + SYMBOL_PADDING);
-                if (s.y < 0 && prevy > SYMBOL_SIZE + SYMBOL_PADDING) {
-                    if (Math.random() < 0.60) {
-                        s.texture = reels[0].symbols[0].texture;
-                    } else {
-                        s.texture = slotTextures[Math.floor(Math.random() * slotTextures.length)];
-                    }
-                    s.scale.x = s.scale.y = Math.min((SYMBOL_SIZE - SYMBOL_PADDING) / s.texture.width, (SYMBOL_SIZE - SYMBOL_PADDING) / s.texture.height);
-                    s.x = Math.round((REEL_WIDTH - s.width) / 2);
-                }
-
-                if (s.y >= 0 && s.y < (SYMBOL_SIZE + SYMBOL_PADDING) * 3) {
-                    r.visibleSymbols.push(s);
-                }
-            }
-
-            // Sort visible symbols by y position to ensure correct order
-            r.visibleSymbols.sort((a, b) => a.y - b.y);
+            reels[i].update(slotTextures, reels);
         }
     });
 
