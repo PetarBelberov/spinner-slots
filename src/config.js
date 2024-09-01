@@ -46,7 +46,7 @@ export const TEXT_STYLES = {
 };
 
 export const ANIMATION = {
-    FLASH_COUNT: 10,
+    FLASH_COUNT: 50,
     FLASH_INTERVAL: 200,
-    REFRESH_DELAY: 3000
+    REFRESH_DELAY: 10000
 };

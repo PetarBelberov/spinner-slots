@@ -6,7 +6,6 @@ import peevskiImage from './assets/peevski.jpg';
 import petkovImage from './assets/petkov.jpg';
 import vasilevImage from './assets/vasilev.jpg';
 import { Reel } from './components/Reel.js';
-import { Symbol } from './components/Symbol.js';
 
 import { tweenTo, updateTweens, backout } from './utils/tweenUtils.js';
 import {
@@ -281,8 +280,8 @@ let jackpotSound;
 
             // Trigger confetti
             confetti({
-                particleCount: 100,
-                spread: 70,
+                particleCount: 500,
+                spread: 140,
                 origin: { y: 0.6 }
             });
 
