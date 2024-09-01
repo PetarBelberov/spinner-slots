@@ -6,14 +6,13 @@ import peevskiImage from './assets/peevski.jpg';
 import petkovImage from './assets/petkov.jpg';
 import vasilevImage from './assets/vasilev.jpg';
 import { Reel } from './components/Reel.js';
-
+import { Button } from './components/Button.js';
 import { tweenTo, updateTweens, backout } from './utils/tweenUtils.js';
 import {
     REEL_WIDTH,
     SYMBOL_SIZE,
     SYMBOL_PADDING,
     REEL_COUNT,
-    SYMBOL_COUNT,
     COLORS,
     GRADIENT_COLORS,
     TEXT_STYLES,
@@ -29,7 +28,6 @@ import {
     Graphics,
     Text,
     TextStyle,
-    BlurFilter,
     FillGradient,
 } from 'pixi.js';
 
@@ -129,54 +127,12 @@ let jackpotSound;
     const style = new TextStyle(TEXT_STYLES.HEADER);  
     const playStyle = new TextStyle(TEXT_STYLES.PLAY);
 
-    const playText = new Text({
-        text: 'Избери',
-        style: playStyle
-    });
-
-    // Create a green container for the play text
-    const playTextContainer = new Container();
-    playTextContainer.x = Math.round((bottom.width - playText.width) / 2);
-    playTextContainer.y = app.screen.height - margin + Math.round((margin - playText.height) / 2);
-
-    // Set the container background color
-    const containerBackground = new Graphics()
-    .fill(COLORS.BUTTON_NORMAL)
-    .roundRect(0, 0, playText.width + 20, playText.height + 20, 8)
-    .fill();
-
-    playTextContainer.addChild(containerBackground);
-    playTextContainer.addChild(playText);
-
-    bottom.addChild(playTextContainer);
-
-    playTextContainer.eventMode = 'static';
-    playTextContainer.cursor = 'pointer';
-
-    playTextContainer.on('pointerover', () => {
-        containerBackground.tint = 0x5A8A22; // Lighter green on hover
-    });
-
-    playTextContainer.on('pointerout', () => {
-        containerBackground.tint = 0xFFFFFF; // Reset to original color
-    });
-
-    playTextContainer.on('pointerdown', () => {
-        containerBackground.tint = 0x3F6118; // Darker green when pressed
-    });
-
-    playTextContainer.on('pointerup', () => {
-        containerBackground.tint = 0x5A8A22; // Back to hover color
-        startPlay(); // Assuming this is your function to start the game
-    });
-
-    playText.x = 10; // Half of the horizontal padding
-    playText.y = 10; // Half of the vertical padding
-
-    playTextContainer.addChild(containerBackground);
-    playTextContainer.addChild(playText);
-
-    bottom.addChild(playTextContainer);
+    const buttonWidth = 10; // Adjust this value as needed
+    const buttonHeight = 10; // Adjust this value as needed
+    const playButton = new Button('Избери', playStyle, buttonWidth, buttonHeight, startPlay);
+    playButton.x = Math.round((bottom.width - playButton.width) / 2);
+    playButton.y = app.screen.height - margin + Math.round((margin - playButton.height) / 2);
+    bottom.addChild(playButton);
 
     // Add header text
     const headerText = new Text({
@@ -203,16 +159,16 @@ let jackpotSound;
     jackpotSound = new Audio(jackpotSoundFile);
 
     function updateContainerSize() {
-        containerBackground.clear();
-        containerBackground
+        playButton.background.clear();
+        playButton.background
             .fill('#4D761D')
-            .roundRect(0, 0, playText.width + 20, playText.height + 20, 8)
+            .roundRect(0, 0, playButton.buttonText.width + 20, playButton.buttonText.height + 20, 8)
             .fill();
         
-        playText.x = 10;
-        playText.y = 10;
+        playButton.buttonText.x = 10;
+        playButton.buttonText.y = 10;
         
-        playTextContainer.x = Math.round((bottom.width - containerBackground.width) / 2);
+        playButton.x = Math.round((bottom.width - playButton.width) / 2);
     }
 
     updateContainerSize();
@@ -220,11 +176,11 @@ let jackpotSound;
     function flashJackpotText() {
         let flashCount = 0;
         const flashInterval = setInterval(() => {
-            playText.visible = !playText.visible;
+            playButton.buttonText.visible = !playButton.buttonText.visible;
             flashCount++;
             if (flashCount >= ANIMATION.FLASH_COUNT) {
                 clearInterval(flashInterval);
-                playText.visible = true;
+                playButton.buttonText.visible = true;
             }
         }, ANIMATION.FLASH_INTERVAL);
     }
@@ -266,7 +222,7 @@ let jackpotSound;
         });
     
         const isJackpot = checkJackpot(reels);
-        playText.text = isJackpot ? 'Поздравления!' : 'Опитай отново!';
+        playButton.setText(isJackpot ? 'Поздравления!' : 'Опитай отново!');
         updateContainerSize();
 
         if (isJackpot) {
@@ -316,7 +272,7 @@ let jackpotSound;
         });
     
         // Reset play text
-        playText.text = 'Избери отново!';;
+        playButton.setText('Избери отново!');
     }
 
     // Listen for animate update.
