@@ -6,6 +6,17 @@ import peevskiImage from './assets/peevski.jpg';
 import petkovImage from './assets/petkov.jpg';
 import vasilevImage from './assets/vasilev.jpg';
 import {
+    REEL_WIDTH,
+    SYMBOL_SIZE,
+    SYMBOL_PADDING,
+    REEL_COUNT,
+    SYMBOL_COUNT,
+    COLORS,
+    GRADIENT_COLORS,
+    TEXT_STYLES,
+    ANIMATION
+} from './config.js';
+import {
     Application,
     Assets,
     Color,
@@ -28,7 +39,7 @@ let jackpotSound;
 
     // Initialize the application
     await app.init({
-        backgroundColor: 0x020024,
+        backgroundColor: COLORS.BACKGROUND,
         backgroundAlpha: 1,
         resizeTo: window
     });
@@ -47,8 +58,8 @@ let jackpotSound;
 
         const ctx = canvas.getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, quality, 0);
-        gradient.addColorStop(0, 'rgb(2,0,36)');
-        gradient.addColorStop(1, 'rgb(121,9,34)');
+        gradient.addColorStop(0, GRADIENT_COLORS.START);
+        gradient.addColorStop(1, GRADIENT_COLORS.END);
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, quality, 1);
@@ -67,10 +78,6 @@ let jackpotSound;
         petkovImage,
         vasilevImage,
     ]);
-
-    const REEL_WIDTH = 160;
-    const SYMBOL_SIZE = 180;
-    const SYMBOL_PADDING = 10;
 
     // Create different slot symbols
     const slotTextures = [
@@ -127,8 +134,8 @@ let jackpotSound;
     reelContainer.y = (app.screen.height - totalReelHeight) / 2;
     reelContainer.x = (app.screen.width - REEL_WIDTH * 5) / 2;
 
-    const top = new Graphics().rect(0, 0, app.screen.width, reelContainer.y).fill({ color: 0x0 });
-    const bottom = new Graphics().rect(0, reelContainer.y + totalReelHeight, app.screen.width, app.screen.height - (reelContainer.y + totalReelHeight)).fill({ color: 0x0 });
+    const top = new Graphics().rect(0, 0, app.screen.width, reelContainer.y).fill({ color: COLORS.TOP_BOTTOM });
+    const bottom = new Graphics().rect(0, reelContainer.y + totalReelHeight, app.screen.width, app.screen.height - (reelContainer.y + totalReelHeight)).fill({ color: COLORS.TOP_BOTTOM });
 
     // Create gradient fill
     const fill = new FillGradient(0, 0, 0, 36 * 1.7);
@@ -143,30 +150,8 @@ let jackpotSound;
     });
 
     // Add play text
-    const style = new TextStyle({
-        fontFamily: 'Arial',
-        fontSize: 28,
-        fontStyle: 'italic',
-        fontWeight: 'bold',
-        fill: { fill },
-        stroke: { color: 'green', width: 5 },
-        dropShadow: {
-            color: 0x000000,
-            angle: Math.PI / 6,
-            blur: 4,
-            distance: 6,
-        },
-        wordWrap: true,
-        wordWrapWidth: 440,
-    });  
-
-    const playStyle = new TextStyle({
-        fontFamily: 'Arial',
-        fontSize: 22,
-        fontWeight: 'bold',
-        fill: { fill },
-        align: 'center',
-    }); 
+    const style = new TextStyle(TEXT_STYLES.HEADER);  
+    const playStyle = new TextStyle(TEXT_STYLES.PLAY);
 
     const playText = new Text({
         text: 'Избери',
@@ -180,9 +165,9 @@ let jackpotSound;
 
     // Set the container background color
     const containerBackground = new Graphics()
-        .fill('#4D761D') // Green color
-        .roundRect(0, 0, playText.width + 20, playText.height + 20, 8) // 8 is the corner radius
-        .fill();
+    .fill(COLORS.BUTTON_NORMAL)
+    .roundRect(0, 0, playText.width + 20, playText.height + 20, 8)
+    .fill();
 
     playTextContainer.addChild(containerBackground);
     playTextContainer.addChild(playText);
@@ -261,11 +246,11 @@ let jackpotSound;
         const flashInterval = setInterval(() => {
             playText.visible = !playText.visible;
             flashCount++;
-            if (flashCount >= 10) {
+            if (flashCount >= ANIMATION.FLASH_COUNT) {
                 clearInterval(flashInterval);
                 playText.visible = true;
             }
-        }, 200);
+        }, ANIMATION.FLASH_INTERVAL);
     }
 
     // Function to start playing.
@@ -273,13 +258,13 @@ let jackpotSound;
         if (running) return;
         running = true;
     
-        for (let i = 0; i < reels.length; i++) {
+        for (let i = 0; i < REEL_COUNT; i++) {
             const r = reels[i];
             const extra = Math.floor(Math.random() * 3);
             const target = r.position + 10 + i * 5 + extra;
             const time = 2500 + i * 600 + extra * 600;
     
-            tweenTo(r, 'position', target, time, backout(0.5), null, i === reels.length - 1 ? reelsComplete : null);
+            tweenTo(r, 'position', target, time, backout(0.5), null, i === REEL_COUNT - 1 ? reelsComplete : null);
         }
     }
 
@@ -330,11 +315,9 @@ let jackpotSound;
             // Set a timeout to refresh after showing the jackpot
             setTimeout(() => {
                 refreshGame();
-                
-                // Re-enable interactivity after refresh
                 bottom.eventMode = 'static';
                 bottom.cursor = 'pointer';
-            }, 3000); // Wait for 3 seconds before refreshing
+            }, ANIMATION.REFRESH_DELAY);
         }
     }
 
@@ -362,19 +345,19 @@ let jackpotSound;
 
     // Listen for animate update.
     app.ticker.add(() => {
-        for (let i = 0; i < reels.length; i++) {
+        for (let i = 0; i < REEL_COUNT; i++) {
             const r = reels[i];
             r.blur.blurY = (r.position - r.previousPosition) * 8;
             r.previousPosition = r.position;
 
             r.visibleSymbols = [];
 
-            for (let j = 0; j < r.symbols.length; j++) {
+            for (let j = 0; j < SYMBOL_COUNT; j++) {
                 const s = r.symbols[j];
                 const prevy = s.y;
                 s.y = ((r.position + j) % r.symbols.length) * (SYMBOL_SIZE + SYMBOL_PADDING) - (SYMBOL_SIZE + SYMBOL_PADDING);
                 if (s.y < 0 && prevy > SYMBOL_SIZE + SYMBOL_PADDING) {
-                    if (Math.random() < 0.50) {
+                    if (Math.random() < 0.60) {
                         s.texture = reels[0].symbols[0].texture;
                     } else {
                         s.texture = slotTextures[Math.floor(Math.random() * slotTextures.length)];
