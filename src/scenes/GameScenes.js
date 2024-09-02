@@ -149,7 +149,7 @@ export class GameScene extends Container {
         });
 
         const isJackpot = this.checkJackpot(this.reels);
-        this.playButton.setText(isJackpot ? 'Поздравления!' : 'Опитай отново!');
+        this.playButton.setText(isJackpot ? 'Поздравления! Получавате прегръдка от новия премиер.' : 'Опитай отново!');
         this.updateContainerSize();
 
         if (isJackpot) {
@@ -191,6 +191,7 @@ export class GameScene extends Container {
         });
 
         this.playButton.setText('Избери отново!');
+        this.updateContainerSize();
     }
 
     updateContainerSize() {
