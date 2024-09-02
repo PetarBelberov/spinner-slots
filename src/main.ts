@@ -1,7 +1,7 @@
 import { Application, Assets, Texture } from 'pixi.js';
-import { GameScene } from './scenes/GameScenes.js';
-import { COLORS } from './config.js';
-import { updateTweens } from './utils/tweenUtils.js';
+import { GameScene } from './scenes/GameScenes';
+import { COLORS } from './config';
+import { updateTweens } from './utils/tweenUtils';
 
 import borisovImage from './assets/borisov.jpg';
 import doganImage from './assets/dogan.jpg';

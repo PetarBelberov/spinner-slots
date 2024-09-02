@@ -1,4 +1,4 @@
-// config.js
+import { TextStyleAlign, TextStyleFontStyle, TextStyleFontWeight } from "pixi.js";
 
 export const REEL_WIDTH = 140;
 export const SYMBOL_SIZE = 190;
@@ -23,8 +23,8 @@ export const TEXT_STYLES = {
     HEADER: {
         fontFamily: 'Arial',
         fontSize: 28,
-        fontStyle: 'italic',
-        fontWeight: 'bold',
+        fontStyle: 'italic' as TextStyleFontStyle,
+        fontWeight: 'bold' as TextStyleFontWeight,
         fill: 0xffffff, // Use a single color value
         stroke: { color: 'green', width: 5 },
         dropShadow: {
@@ -39,9 +39,9 @@ export const TEXT_STYLES = {
     PLAY: {
         fontFamily: 'Arial',
         fontSize: 22,
-        fontWeight: 'bold',
+        fontWeight: 'bold' as TextStyleFontWeight,
         fill: 0xffffff, // Use a single color value
-        align: 'center',
+        align: 'center' as TextStyleAlign,
     }
 };
 

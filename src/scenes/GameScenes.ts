@@ -1,25 +1,53 @@
-// scenes/GameScene.js
-
-import { Container, Sprite, Graphics, Text, TextStyle, Texture } from 'pixi.js';
-import { Reel } from '../components/Reel.js';
-import { Button } from '../components/Button.js';
-import { tweenTo, backout } from '../utils/tweenUtils.js';
+import { Container, Sprite, Graphics, Text, TextStyle, Texture, Application } from 'pixi.js';
+import { Reel } from '../components/Reel';
+import { Button } from '../components/Button';
+import { tweenTo, backout } from '../utils/tweenUtils';
 import { REEL_WIDTH, SYMBOL_SIZE, SYMBOL_PADDING, REEL_COUNT, COLORS, GRADIENT_COLORS, TEXT_STYLES, ANIMATION } from '../config.js';
 import confetti from 'canvas-confetti';
 import jackpotSound from '../assets/jackpot.mp3';
+import { GameSceneProps } from './GameScenes.d';
 
 /**
  * Encapsulates all the specific game logic.
  */
 export class GameScene extends Container {
-    constructor(app, slotTextures) {
+    app: GameSceneProps['app'];
+    slotTextures: GameSceneProps['slotTextures'];
+    reels: GameSceneProps['reels'];
+    running: GameSceneProps['running'];
+    jackpotSound: GameSceneProps['jackpotSound'];
+    reelContainer: GameSceneProps['reelContainer'];
+    top: GameSceneProps['top'];
+    bottom: GameSceneProps['bottom'];
+    playButton: GameSceneProps['playButton'];
+
+    constructor(app: Application, slotTextures: Texture[]) {
         super();
         this.app = app;
         this.slotTextures = slotTextures;
         this.reels = [];
         this.running = false;
         this.jackpotSound = new Audio(jackpotSound);
+        this.reelContainer = new Container();
+        this.top = new Container();
+        this.bottom = new Container();
 
+        const buttonText = new Text({
+            text: 'Избери',
+            style: TEXT_STYLES.PLAY
+        });
+        const buttonStyle = new TextStyle(TEXT_STYLES.PLAY);
+        const buttonWidth = 10;
+        const buttonHeight = 50;
+
+        this.playButton = new Button(
+            buttonText,
+            buttonStyle,
+            buttonWidth,
+            buttonHeight,
+            this.startPlay.bind(this)
+        );
+        
         this.initializeScene();
     }
     
@@ -46,12 +74,14 @@ export class GameScene extends Container {
         canvas.height = 1;
 
         const ctx = canvas.getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, quality, 0);
-        gradient.addColorStop(0, GRADIENT_COLORS.START);
-        gradient.addColorStop(1, GRADIENT_COLORS.END);
+        const gradient = ctx?.createLinearGradient(0, 0, quality, 0);
+        gradient?.addColorStop(0, GRADIENT_COLORS.START);
+        gradient?.addColorStop(1, GRADIENT_COLORS.END);
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, quality, 1);
+        if (ctx) {
+            ctx.fillStyle = gradient as CanvasGradient;
+        }
+        ctx?.fillRect(0, 0, quality, 1);
 
         return Texture.from(canvas);
     }
@@ -98,10 +128,14 @@ export class GameScene extends Container {
 
     createPlayButton() {
         const margin = (this.app.screen.height - SYMBOL_SIZE * 3) / 2;
-        const buttonWidth = 10; // Same as in main.js
-        const buttonHeight = 10; // Same as in main.js
+        const buttonWidth = 10;
+        const buttonHeight = 10;
         const playStyle = new TextStyle(TEXT_STYLES.PLAY);
-        this.playButton = new Button('Избери', playStyle, buttonWidth, buttonHeight, this.startPlay.bind(this));
+        const buttonLabel = new Text({
+            text: 'Избери',
+            style: playStyle
+         });
+        this.playButton = new Button(buttonLabel, playStyle, buttonWidth, buttonHeight, this.startPlay.bind(this));
         this.playButton.x = Math.round((this.bottom.width - this.playButton.width) / 2);
         this.playButton.y = this.app.screen.height - margin + Math.round((margin - this.playButton.height) / 2);
         this.bottom.addChild(this.playButton);
@@ -129,7 +163,7 @@ export class GameScene extends Container {
         }
     }
 
-    checkJackpot(reels) {
+    checkJackpot(reels: Reel[]) {
         for (let row = 0; row < 3; row++) {
             const rowSymbols = reels.map(reel => reel.finalSymbols[row]);
             const rowMatch = rowSymbols.every(texture => texture === rowSymbols[0]);
@@ -145,7 +179,7 @@ export class GameScene extends Container {
         this.running = false;
 
         this.reels.forEach((reel, i) => {
-            reel.finalSymbols = reel.visibleSymbols.map(symbol => symbol.texture);
+            reel.finalSymbols = reel.visibleSymbols.map((symbol: Sprite) => symbol.texture);
         });
 
         const isJackpot = this.checkJackpot(this.reels);
@@ -184,8 +218,8 @@ export class GameScene extends Container {
             this.jackpotSound.currentTime = 0;
         });
 
-        this.reels.forEach(reel => {
-            reel.symbols.forEach(symbol => {
+        this.reels.forEach((reel: Reel) => {
+            reel.symbols.forEach((symbol: Sprite) => {
                 symbol.texture = this.slotTextures[Math.floor(Math.random() * this.slotTextures.length)];
             });
         });
@@ -219,7 +253,7 @@ export class GameScene extends Container {
         }, ANIMATION.FLASH_INTERVAL);
     }
 
-    update(delta) {
+    update(delta: any) {
         for (let i = 0; i < REEL_COUNT; i++) {
             this.reels[i].update(this.slotTextures, this.reels);
         }

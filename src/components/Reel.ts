@@ -1,12 +1,20 @@
-import { Container, BlurFilter } from 'pixi.js';
-import { SYMBOL_SIZE, SYMBOL_PADDING, SYMBOL_COUNT } from '../config.js';
-import { Symbol } from './Symbol.js';
+import { Container, BlurFilter, Sprite, Texture } from 'pixi.js';
+import { SYMBOL_SIZE, SYMBOL_PADDING, SYMBOL_COUNT } from '../config';
+import { Symbol } from './Symbol';
 
 /**
  * Handles the creation of symbols, their positioning, and updating their state during animation.
  */
 export class Reel {
-    constructor(slotTextures) {
+    container: Container;
+    position: number;
+    finalSymbols: any;
+    visibleSymbols: any;
+    previousPosition: number;
+    symbols: Symbol[];
+    blur: BlurFilter;
+    
+    constructor(slotTextures: Texture[]) {
         this.container = new Container();
         this.symbols = [];
         this.position = 0;
@@ -26,7 +34,7 @@ export class Reel {
         }
     }
 
-    update(slotTextures, reels) {
+    update(slotTextures: Texture[], reels: Reel[]) {
         this.blur.strengthY = (this.position - this.previousPosition) * 8;
         this.previousPosition = this.position;
     
@@ -44,10 +52,10 @@ export class Reel {
             }
         }
     
-        this.visibleSymbols.sort((a, b) => a.y - b.y);
+        this.visibleSymbols.sort((a: Sprite, b: Sprite) => a.y - b.y);
     }
 
     getVisibleSymbols() {
-        return this.symbols.filter(s => s.y >= 0 && s.y < (SYMBOL_SIZE + SYMBOL_PADDING) * 3);
+        return this.symbols.filter((s: Sprite) => s.y >= 0 && s.y < (SYMBOL_SIZE + SYMBOL_PADDING) * 3);
     }
 }

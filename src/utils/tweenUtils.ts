@@ -1,9 +1,18 @@
-import { lerp } from './mathUtils.js';
+import { lerp } from './mathUtils';
+import { Tween } from './tweenUtils.d';
 
-export const tweening = [];
+export const tweening: Tween[] = [];
 
-export function tweenTo(object, property, target, time, easing, onchange, oncomplete) {
-    const tween = {
+export function tweenTo(
+    object: any,
+    property: string,
+    target: number,
+    time: number,
+    easing: (t: number) => number,
+    onchange: ((t: Tween) => void) | null,
+    oncomplete: ((t: Tween) => void) | null
+): Tween {
+    const tween: Tween = {
         object,
         property,
         propertyBeginValue: object[property],
@@ -20,8 +29,8 @@ export function tweenTo(object, property, target, time, easing, onchange, oncomp
     return tween;
 }
 
-export function updateTweens(now) {
-    const remove = [];
+export function updateTweens(now: number): void {
+    const remove: Tween[] = [];
 
     for (let i = 0; i < tweening.length; i++) {
         const t = tweening[i];
@@ -40,8 +49,6 @@ export function updateTweens(now) {
     }
 }
 
-// Backout function from tweenjs.
-// https://github.com/CreateJS/TweenJS/blob/master/src/tweenjs/Ease.js
-export function backout(amount) {
-    return (t) => --t * t * ((amount + 1) * t + amount) + 1;
+export function backout(amount: number): (t: number) => number {
+    return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
 }

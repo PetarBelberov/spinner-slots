@@ -1,13 +1,16 @@
-// components/Button.js
-import { Container, Graphics, Text } from 'pixi.js';
-import { COLORS } from '../config.js';
+import { Container, Graphics, Text, TextStyle } from 'pixi.js';
+import { COLORS } from '../config';
 
 export class Button extends Container {
-    constructor(text, style, width, height, onClick) {
+    background: Graphics;
+    buttonText: Text;
+    onClick: () => void;
+
+    constructor(text: Text, style: TextStyle, width: number, height: number, onClick: () => void) {
         super();
 
         this.buttonText = new Text({
-            text: text,
+            text: text.text,
             style: style
         });
         this.buttonText.x = 10;
@@ -49,7 +52,7 @@ export class Button extends Container {
         if (this.onClick) this.onClick();
     }
 
-    setText(newText) {
+    setText(newText: string) {
         this.buttonText.text = newText;
     }
 }
