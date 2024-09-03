@@ -3,10 +3,10 @@ import { Reel } from '../components/Reel';
 import { Button } from '../components/Button';
 import { tweenTo, backout } from '../utils/tweenUtils';
 import { REEL_WIDTH, SYMBOL_SIZE, SYMBOL_PADDING, REEL_COUNT, COLORS, GRADIENT_COLORS, TEXT_STYLES, ANIMATION } from '../config.js';
-import confetti from 'canvas-confetti';
 import jackpotSound from '../assets/jackpot.mp3';
 import { GameSceneProps } from './GameScenes.d';
 import { BackgroundManager } from './BackgroundManager';
+import { AnimationManager } from './AnimationManager';
 
 /**
  * Encapsulates all the specific game logic.
@@ -22,6 +22,7 @@ export class GameScene extends Container {
     bottom: GameSceneProps['bottom'];
     playButton: GameSceneProps['playButton'];
     backgroundManager: BackgroundManager;
+    animationManager!: AnimationManager; // The property will be assigned before it's used.
 
     constructor(app: Application, slotTextures: Texture[]) {
         super();
@@ -34,6 +35,7 @@ export class GameScene extends Container {
         this.top = new Container();
         this.bottom = new Container();
         this.backgroundManager = new BackgroundManager(app);
+        // this.animationManager = new AnimationManager(this.playButton);
 
         const buttonText = new Text({
             text: 'Избери',
@@ -52,6 +54,10 @@ export class GameScene extends Container {
         );
         
         this.initializeScene();
+    }
+
+    initializeAnimationManager() {
+        this.animationManager = new AnimationManager(this.playButton);
     }
     
     initializeScene() {
@@ -177,6 +183,7 @@ export class GameScene extends Container {
         }
         this.bottom.addChild(this.playButton);
         this.updateContainerSize();
+        this.initializeAnimationManager();
     }
 
     addEventListeners() {
@@ -228,7 +235,7 @@ export class GameScene extends Container {
             this.playButton.setText('Опитай отново!');
         }
 
-    this.updateContainerSize();
+        this.updateContainerSize();
 
         if (isJackpot) {
             this.bottom.eventMode = 'none';
@@ -237,13 +244,8 @@ export class GameScene extends Container {
             this.jackpotSound.load();
             this.jackpotSound.play().catch(error => console.log('Audio play failed:', error));
 
-            confetti({
-                particleCount: 500,
-                spread: 140,
-                origin: { y: 0.6 }
-            });
-
-            this.flashJackpotText();
+            this.animationManager.triggerJackpotAnimation
+            this.animationManager.flashJackpotText();
 
             setTimeout(() => {
                 this.refreshGame();
@@ -283,18 +285,6 @@ export class GameScene extends Container {
         this.playButton.buttonText.y = 10;
         
         this.playButton.x = Math.round((this.bottom.width - this.playButton.width) / 2);
-    }
-
-    flashJackpotText() {
-        let flashCount = 0;
-        const flashInterval = setInterval(() => {
-            this.playButton.buttonText.visible = !this.playButton.buttonText.visible;
-            flashCount++;
-            if (flashCount >= ANIMATION.FLASH_COUNT) {
-                clearInterval(flashInterval);
-                this.playButton.buttonText.visible = true;
-            }
-        }, ANIMATION.FLASH_INTERVAL);
     }
 
     update(delta: any) {
