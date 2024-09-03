@@ -6,6 +6,7 @@ import { REEL_WIDTH, SYMBOL_SIZE, SYMBOL_PADDING, REEL_COUNT, COLORS, GRADIENT_C
 import confetti from 'canvas-confetti';
 import jackpotSound from '../assets/jackpot.mp3';
 import { GameSceneProps } from './GameScenes.d';
+import { BackgroundManager } from './BackgroundManager';
 
 /**
  * Encapsulates all the specific game logic.
@@ -20,6 +21,7 @@ export class GameScene extends Container {
     top: GameSceneProps['top'];
     bottom: GameSceneProps['bottom'];
     playButton: GameSceneProps['playButton'];
+    backgroundManager: BackgroundManager;
 
     constructor(app: Application, slotTextures: Texture[]) {
         super();
@@ -31,6 +33,7 @@ export class GameScene extends Container {
         this.reelContainer = new Container();
         this.top = new Container();
         this.bottom = new Container();
+        this.backgroundManager = new BackgroundManager(app);
 
         const buttonText = new Text({
             text: 'Избери',
@@ -52,7 +55,7 @@ export class GameScene extends Container {
     }
     
     initializeScene() {
-        this.createBackground();
+        this.backgroundManager.createBackground();
         this.createReels();
         this.createTopBottom();
         this.createPlayButton();
