@@ -168,7 +168,7 @@ export class GameScene extends Container {
         this.playButton.x = Math.round((this.bottom.width - this.playButton.width) / 2);
         if (this.app.screen.width < 768) {
             this.playButton.y = this.app.screen.height - this.playButton.height - 200; // Adjust '20' as needed
-            this.playButton.y = (this.app.screen.height * 0.75) - this.playButton.height;
+            this.playButton.y = (this.app.screen.height * 0.85) - this.playButton.height;
         } else {
             this.playButton.y = this.app.screen.height - margin + Math.round((margin - this.playButton.height) / 2);
         }
