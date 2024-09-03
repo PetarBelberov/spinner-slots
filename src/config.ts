@@ -7,15 +7,15 @@ export const REEL_COUNT = 5;
 export const SYMBOL_COUNT = 4;
 
 export const COLORS = {
-    BACKGROUND: 0x020024,
-    TOP_BOTTOM: 0x0,
-    BUTTON_NORMAL: '#4D761D',
+    BACKGROUND: '#0e1801',
+    TOP_BOTTOM: '#0e1801',
+    BUTTON_NORMAL: '#305703',
     BUTTON_HOVER: 0x5A8A22,
     BUTTON_PRESS: 0x3F6118
 };
 
 export const GRADIENT_COLORS = {
-    START: 'rgb(2,0,36)',
+    START: 'rgb(150,50,50)',
     END: 'rgb(121,9,34)'
 };
 
@@ -26,7 +26,7 @@ export const TEXT_STYLES = {
         fontStyle: 'italic' as TextStyleFontStyle,
         fontWeight: 'bold' as TextStyleFontWeight,
         fill: 0xffffff, // Use a single color value
-        stroke: { color: 'green', width: 5 },
+        stroke: { color: '#101b01', width: 5 },
         dropShadow: {
             color: 0x000000,
             angle: Math.PI / 6,

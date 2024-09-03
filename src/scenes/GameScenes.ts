@@ -95,36 +95,63 @@ export class GameScene extends Container {
             this.reels.push(reel);
         }
         this.addChild(this.reelContainer);
-
-        const margin = (this.app.screen.height - SYMBOL_SIZE * 3) / 2;
-        const totalReelHeight = 3 * (SYMBOL_SIZE + SYMBOL_PADDING) - SYMBOL_PADDING;
-        this.reelContainer.y = (this.app.screen.height - totalReelHeight) / 2;
-        this.reelContainer.x = (this.app.screen.width - REEL_WIDTH * 5) / 2;
+    
+        const totalReelWidth = REEL_WIDTH * REEL_COUNT;
+        const totalReelHeight = SYMBOL_SIZE * 3 + SYMBOL_PADDING * 2;
+    
+        // Check if it's a mobile device
+        if (this.app.screen.width < 768) { // Adjust this threshold as needed
+            const scaleX = this.app.screen.width / totalReelWidth;
+            const scaleY = this.app.screen.height / totalReelHeight;
+            const scale = Math.min(scaleX, scaleY) * 0.9;
+    
+            this.reelContainer.scale.set(scale);
+            this.reelContainer.x = (this.app.screen.width - this.reelContainer.width) / 2;
+            this.reelContainer.y = (this.app.screen.height - this.reelContainer.height) / 2;
+        } else {
+            // Original positioning for desktop
+            const margin = (this.app.screen.height - SYMBOL_SIZE * 3) / 2;
+            this.reelContainer.y = (this.app.screen.height - totalReelHeight) / 2;
+            this.reelContainer.x = (this.app.screen.width - totalReelWidth) / 2;
+        }
     }
 
     createTopBottom() {
-        const margin = (this.app.screen.height - SYMBOL_SIZE * 3) / 2;
+        const isMobile = this.app.screen.width < 768; // Adjust this threshold as needed
+        const margin = (this.app.screen.height - SYMBOL_SIZE * 2) / 2;
         const totalReelHeight = 3 * (SYMBOL_SIZE + SYMBOL_PADDING) - SYMBOL_PADDING;
-
+    
         this.top = new Container();
         const topBackground = new Graphics().rect(0, 0, this.app.screen.width, this.reelContainer.y).fill({ color: COLORS.TOP_BOTTOM });
         this.top.addChild(topBackground);
-
+    
         this.bottom = new Container();
-        const bottomBackground = new Graphics().rect(0, this.reelContainer.y + totalReelHeight, this.app.screen.width, this.app.screen.height - (this.reelContainer.y + totalReelHeight)).fill({ color: COLORS.TOP_BOTTOM });
+        let bottomBackgroundHeight;
+    
+        if (isMobile) {
+            bottomBackgroundHeight = this.app.screen.height + (this.reelContainer.y + this.reelContainer.height);
+        } else {
+            bottomBackgroundHeight = this.app.screen.height - (this.reelContainer.y + totalReelHeight);
+        }
+    
+        const bottomBackground = new Graphics()
+            .rect(0, this.reelContainer.y + (isMobile ? this.reelContainer.height * 0.75 : totalReelHeight), 
+                  this.app.screen.width, 
+                  bottomBackgroundHeight)
+            .fill({ color: COLORS.BACKGROUND });
         this.bottom.addChild(bottomBackground);
-
+    
         const headerText = new Text({
             text: 'Премиер на България?',
             style: new TextStyle(TEXT_STYLES.HEADER)
         });
         headerText.x = Math.round((topBackground.width - headerText.width) / 2);
-        headerText.y = Math.round((margin - headerText.height) / 2);
+        headerText.y = isMobile ? 10 : Math.round(topBackground.height / 4); // Adjust these values as needed
         this.top.addChild(headerText);
-
+    
         this.addChild(this.top);
         this.addChild(this.bottom);
-    }
+    }    
 
     createPlayButton() {
         const margin = (this.app.screen.height - SYMBOL_SIZE * 3) / 2;
@@ -183,8 +210,16 @@ export class GameScene extends Container {
         });
 
         const isJackpot = this.checkJackpot(this.reels);
-        this.playButton.setText(isJackpot ? 'Поздравления! Получавате прегръдка от новия премиер.' : 'Опитай отново!');
-        this.updateContainerSize();
+        if (isJackpot) {
+            const jackpotMessage = this.app.screen.width < 768 
+                ? 'Поздравления!\nПолучавате прегръдка\nот новия премиер.'
+                : 'Поздравления! Получавате прегръдка от новия премиер.';
+            this.playButton.setText(jackpotMessage);
+        } else {
+            this.playButton.setText('Опитай отново!');
+        }
+
+    this.updateContainerSize();
 
         if (isJackpot) {
             this.bottom.eventMode = 'none';
@@ -231,7 +266,7 @@ export class GameScene extends Container {
     updateContainerSize() {
         this.playButton.background.clear();
         this.playButton.background
-            .fill('#4D761D')
+            .fill({color: COLORS.BUTTON_NORMAL})
             .roundRect(0, 0, this.playButton.buttonText.width + 20, this.playButton.buttonText.height + 20, 8)
             .fill();
         
