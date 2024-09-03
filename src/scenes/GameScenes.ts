@@ -162,18 +162,24 @@ export class GameScene extends Container {
             text: 'Избери',
             style: playStyle
          });
+
+       
         this.playButton = new Button(buttonLabel, playStyle, buttonWidth, buttonHeight, this.startPlay.bind(this));
         this.playButton.x = Math.round((this.bottom.width - this.playButton.width) / 2);
-        this.playButton.y = this.app.screen.height - margin + Math.round((margin - this.playButton.height) / 2);
+        if (this.app.screen.width < 768) {
+            this.playButton.y = this.app.screen.height - this.playButton.height - 200; // Adjust '20' as needed
+            this.playButton.y = (this.app.screen.height * 0.75) - this.playButton.height;
+        } else {
+            this.playButton.y = this.app.screen.height - margin + Math.round((margin - this.playButton.height) / 2);
+        }
         this.bottom.addChild(this.playButton);
-    
         this.updateContainerSize();
     }
 
     addEventListeners() {
         this.bottom.eventMode = 'static';
-        this.bottom.cursor = 'pointer';
-        this.bottom.addListener('pointerdown', this.startPlay.bind(this));
+        this.playButton.cursor = 'pointer';
+        this.playButton.addListener('pointerdown', this.startPlay.bind(this));
     }
 
     startPlay() {
