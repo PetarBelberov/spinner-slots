@@ -244,7 +244,7 @@ export class GameScene extends Container {
             this.jackpotSound.load();
             this.jackpotSound.play().catch(error => console.log('Audio play failed:', error));
 
-            this.animationManager.triggerJackpotAnimation
+            this.animationManager.triggerJackpotAnimation();
             this.animationManager.flashJackpotText();
 
             setTimeout(() => {

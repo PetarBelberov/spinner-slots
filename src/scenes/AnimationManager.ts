@@ -26,10 +26,14 @@ export class AnimationManager {
     }
 
     triggerJackpotAnimation() {
-        confetti({
-            particleCount: 500,
-            spread: 140,
-            origin: { y: 0.6 }
-        });
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                confetti({
+                    particleCount: 500,
+                    spread: 140,
+                    origin: { y: 0.6 }
+                });
+            }, i * 3000); // Fire confetti every second
+        }
     }
 }
