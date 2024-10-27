@@ -7,7 +7,7 @@ import borisovImage from './assets/borisov.jpg';
 import doganImage from './assets/dogan.jpg';
 import peevskiImage from './assets/peevski.jpg';
 import petkovImage from './assets/petkov.jpg';
-import vasilevImage from './assets/vasilev.jpg';
+import kostadinovImage from './assets/kostadinov.jpg';
 
 /**
  * Application setup and initialization.
@@ -27,7 +27,7 @@ import vasilevImage from './assets/vasilev.jpg';
         doganImage,
         peevskiImage,
         petkovImage,
-        vasilevImage,
+        kostadinovImage,
     ]);
 
     const slotTextures = [
@@ -35,7 +35,7 @@ import vasilevImage from './assets/vasilev.jpg';
         doganImage,
         peevskiImage,
         petkovImage,
-        vasilevImage,
+        kostadinovImage,
     ].map(img => Texture.from(img));
 
     const gameScene = new GameScene(app, slotTextures);
